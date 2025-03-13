@@ -7,7 +7,7 @@
 #
 # Generator:     sensirion-driver-generator 1.1.2
 # Product:       sen63c
-# Model-Version: 1.1.0
+# Model-Version: 1.2.0
 #
 """
 The class Sen63cDeviceBase implements the low level interface of the sensor.
@@ -19,10 +19,11 @@ from sensirion_driver_adapters.transfer import execute_transfer
 from sensirion_driver_support_types.mixin_access import MixinAccess
 from sensirion_i2c_sen63c.commands import (ActivateShtHeater, DeviceReset, DeviceStatus, GetAmbientPressure,
                                            GetCo2SensorAutomaticSelfCalibration, GetDataReady, GetProductName,
-                                           GetSensorAltitude, GetSerialNumber, PerformForcedCo2Recalibration,
-                                           ReadAndClearDeviceStatus, ReadDeviceStatus, ReadMeasuredRawValues,
-                                           ReadMeasuredValuesAsIntegers, ReadNumberConcentrationValuesAsIntegers,
-                                           SetAmbientPressure, SetCo2SensorAutomaticSelfCalibration, SetSensorAltitude,
+                                           GetSensorAltitude, GetSerialNumber, GetShtHeaterMeasurements, GetVersion,
+                                           PerformForcedCo2Recalibration, ReadAndClearDeviceStatus, ReadDeviceStatus,
+                                           ReadMeasuredRawValues, ReadMeasuredValuesAsIntegers,
+                                           ReadNumberConcentrationValuesAsIntegers, SetAmbientPressure,
+                                           SetCo2SensorAutomaticSelfCalibration, SetSensorAltitude,
                                            SetTemperatureAccelerationParameters, SetTemperatureOffsetParameters,
                                            StartContinuousMeasurement, StartFanCleaning, StopMeasurement)
 
@@ -139,7 +140,7 @@ class Sen63cDeviceBase:
             *Note: If this value is unknown, 0xFFFF is returned.*
         :return number_concentration_pm10p0:
             Value is scaled with factor 10: PM10.0 [particles/cm³] = value / 10
-            *Note: If this value is unknown, 0xFFFF is returned.*
+               - field:
         """
         transfer = ReadNumberConcentrationValuesAsIntegers()
         return execute_transfer(self._channel, transfer)
@@ -400,6 +401,8 @@ class Sen63cDeviceBase:
         to reverse creep at high humidity.
         This command activates the SHT sensor heater with 200mW for 1s.
         The heater is then automatically deactivated again.
+        The "get_sht_heater_measurements" command can be used to check if the
+        heater has finished.
         Wait at least 20s after this command before starting a measurement to get
         coherent temperature values (heating consequence to disappear).
 
@@ -407,6 +410,28 @@ class Sen63cDeviceBase:
             This command is only available in idle mode.
         """
         transfer = ActivateShtHeater()
+        return execute_transfer(self._channel, transfer)
+
+    def get_sht_heater_measurements(self):
+        """
+        Get the measured values when the SHT sensor heating is triggerd. If the
+        heating is not finished, the returned humidity and temperature values
+        are 0x7FFF.
+
+        :return humidity:
+            Value is scaled with factor 100: RH [%] = value / 100
+            *Note: If this value is not available, 0x7FFF is returned.*
+        :return temperature:
+            Value is scaled with factor 200: T [°C] = value / 200
+            *Note: If this value is not available, 0x7FFF is returned.*
+
+        .. note::
+            This command is only availble in idle mode.
+            This command must be used after the "activate_sht_heater" command.
+            The get_sht_heater_measurements command can be queried every 0.05s to get
+            the measurements.
+        """
+        transfer = GetShtHeaterMeasurements()
         return execute_transfer(self._channel, transfer)
 
     def get_product_name(self):
@@ -430,6 +455,18 @@ class Sen63cDeviceBase:
         """
         transfer = GetSerialNumber()
         return execute_transfer(self._channel, transfer)[0]
+
+    def get_version(self):
+        """
+        Gets the version information for the hardware, firmware and communication protocol.
+
+        :return firmware_major:
+            Firmware major version number.
+        :return firmware_minor:
+            Firmware minor version number.
+        """
+        transfer = GetVersion()
+        return execute_transfer(self._channel, transfer)
 
     def read_device_status(self):
         """
