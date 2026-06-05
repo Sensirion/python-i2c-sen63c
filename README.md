@@ -2,7 +2,7 @@
 
 This repository contains the Python driver to communicate with a Sensirion SEN63C sensor over I2C.
 
-<img src="https://raw.githubusercontent.com/Sensirion/python-i2c-sen63c/master/images/sen6x.png"
+<img src="https://raw.githubusercontent.com/Sensirion/python-i2c-sen63c/master/images/product-image-sen6x.png"
     width="300px" alt="SEN63C picture">
 
 
@@ -10,18 +10,18 @@ Click [here](https://sensirion.com/sen6x-air-quality-sensor-platform) to learn m
 
 
 
-The default I²C address of [SEN63C](https://www.sensirion.com/products/catalog/SEN63C) is **0x6B**.
+The default I²C address of [SEN63C](https://www.sensirion.com/products/catalog/SEN63C) is **0x6b**.
 
 
 
 ## Connect the sensor
 
-You can connect your sensor over a [SEK-SensorBridge](https://developer.sensirion.com/sensirion-products/sek-sensorbridge/).
+You can connect your sensor over a [SEK-SensorBridge](https://developer.sensirion.com/product-support/sek-sensorbridge/).
 For special setups you find the sensor pinout in the section below.
 
 <details><summary>Sensor pinout</summary>
 <p>
-<img src="https://raw.githubusercontent.com/Sensirion/python-i2c-sen63c/master/images/sen6x-pinout.png"
+<img src="https://raw.githubusercontent.com/Sensirion/python-i2c-sen63c/master/images/product-pinout-sen6x.png"
      width="300px" alt="sensor wiring picture">
 
 | *Pin* | *Cable Color* | *Name* | *Description*  | *Comments* |
